@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Form Submit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #D4AF37;
+            color: #1E3A5F;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #logs {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Formulario</h1>
+    <p>Este es un test simple para verificar que el formulario funciona correctamente.</p>
+
+    <form id="testForm">
+        <div class="form-group">
+            <label for="title">Título *</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea id="description" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="file">Archivo *</label>
+            <input type="file" id="file" name="file" required>
+        </div>
+
+        <button type="submit" id="submitBtn">Enviar Formulario</button>
+    </form>
+
+    <div id="logs">
+        <strong>📋 Logs:</strong>
+        <div id="logContent"></div>
+    </div>
+
+    <script>
+        const logDiv = document.getElementById('logContent');
+        
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            entry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        const form = document.getElementById('testForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Log cuando el botón es clickeado
+        submitBtn.addEventListener('click', (e) => {
+            log('🔵 Button clicked', 'info');
+        });
+
+        // Log cuando el formulario es enviado
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            log('🔵 Form submit event fired', 'info');
+
+            const formData = new FormData(form);
+            const title = formData.get('title');
+            const file = formData.get('file');
+
+            log(`📝 Title: ${title}`, 'info');
+            log(`📎 File: ${file.name} (${file.size} bytes)`, 'info');
+
+            if (!title || !file.name) {
+                log('❌ Validation failed', 'error');
+                return;
+            }
+
+            log('✅ Validation passed', 'success');
+            log('📤 Sending to backend...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:3001/api/v1/documents', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Document created successfully!', 'success');
+                    log(`📄 Response: ${JSON.stringify(data)}`, 'success');
+                    form.reset();
+                } else {
+                    const error = await response.text();
+                    log(`❌ Error ${response.status}: ${error}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Network error: ${error.message}`, 'error');
+            }
+        });
+
+        log('✅ Test page loaded', 'success');
+        log('📝 Fill the form and click submit to test', 'info');
+    </script>
+</body>
+</html>

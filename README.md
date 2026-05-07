@@ -1,174 +1,254 @@
-# GesGov Frontend - Sistema de Gestión Documental
+# GesGov — Frontend
 
-Frontend desarrollado con React + Vite para el sistema de gestión de documentos de la Alcaldía Municipal.
+Aplicación web SPA construida con React 18 y Vite para el sistema de gestión documental de la Alcaldía Municipal.
 
-## 🚀 Características
+## Stack
 
-- ✅ Interfaz moderna y responsiva
-- ✅ Dashboard con estadísticas en tiempo real
-- ✅ Gestión completa de documentos
-- ✅ Formulario de radicación de documentos
-- ✅ Sistema de alertas y notificaciones
-- ✅ Filtros y búsqueda avanzada
-- ✅ Modal de detalle de documentos
-- ✅ Diseño institucional personalizado
+- **Framework**: React 18 + JSX
+- **Build tool**: Vite 5
+- **Iconos**: Lucide React
+- **HTTP**: Axios
+- **Estilos**: CSS-in-JS (inline styles + variables CSS)
+- **Fuentes**: Inter + Plus Jakarta Sans (Google Fonts)
 
-## 📋 Requisitos Previos
+## Requisitos
 
-- Node.js >= 18.x
-- npm >= 9.x
-- Backend de NestJS corriendo en `http://localhost:3001`
+- Node.js 20+
+- npm 9+
 
-## 🔧 Instalación
+## Instalación
 
-1. **Instalar dependencias:**
 ```bash
 npm install
 ```
 
-2. **Configurar variables de entorno:**
+## Variables de Entorno
 
-El archivo `.env` ya está configurado:
+Copia `.env.example` como `.env`:
 
-```env
-VITE_API_URL=http://localhost:3001/api/v1
+```bash
+cp .env.example .env
 ```
 
-Si el backend corre en otro puerto, actualiza esta variable.
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `VITE_API_URL` | URL base de la API del backend | `http://localhost:3001/api/v1` |
 
-## ▶️ Ejecutar el Proyecto
+> Las variables de Vite deben comenzar con `VITE_` para ser accesibles en el código.
 
-### Modo desarrollo:
+## Scripts
+
 ```bash
+# Desarrollo con hot-reload (http://localhost:5173)
 npm run dev
-```
 
-El frontend estará disponible en: **http://localhost:5173**
-
-### Modo producción:
-```bash
+# Build de producción
 npm run build
+
+# Preview del build de producción
 npm run preview
+
+# Linting
+npm run lint
 ```
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
-front/
-├── src/
-│   ├── App.jsx           # Componente principal con toda la aplicación
-│   └── main.jsx          # Punto de entrada de React
-├── index.html            # HTML base
-├── .env                  # Variables de entorno
-├── vite.config.js        # Configuración de Vite
-└── package.json          # Dependencias
+src/
+├── main.jsx                          # Entry point — monta React con AuthProvider
+├── App.jsx                           # Componente raíz — routing por estado
+├── api/
+│   ├── axios.config.js               # Instancia Axios + interceptores JWT
+│   ├── auth.api.js                   # Llamadas a /auth/*
+│   └── documents.api.js              # Llamadas a /documents/*
+├── components/
+│   ├── auth/
+│   │   └── LoginPage.jsx             # Pantalla de inicio de sesión
+│   ├── common/
+│   │   ├── Button.jsx                # Botón reutilizable con variantes
+│   │   ├── Card.jsx                  # Tarjeta contenedora
+│   │   ├── ErrorMessage.jsx          # Mensaje de error con retry
+│   │   ├── Icons.jsx                 # Iconos SVG legacy (compatibilidad)
+│   │   ├── Loading.jsx               # Spinner de carga
+│   │   ├── StatusBadge.jsx           # Badge de estado de documento
+│   │   └── index.js                  # Re-exportaciones
+│   ├── documents/
+│   │   ├── Dashboard.jsx             # Panel principal con estadísticas
+│   │   ├── DocumentDetailModal.jsx   # Modal de detalle de documento
+│   │   ├── DocumentsList.jsx         # Lista con búsqueda y filtros
+│   │   ├── SettingsPage.jsx          # Página de configuración
+│   │   ├── UploadForm.jsx            # Formulario de radicación
+│   │   └── index.js
+│   └── layout/
+│       ├── Sidebar.jsx               # Navegación lateral
+│       ├── Topbar.jsx                # Barra superior
+│       └── index.js
+├── constants/
+│   └── documentStatus.js            # Labels y colores de estados
+├── context/
+│   └── AuthContext.jsx              # Estado global de autenticación
+├── hooks/
+│   └── useDocuments.js              # Hook para CRUD de documentos
+├── styles/
+│   └── globalStyles.js              # Variables CSS + animaciones
+└── utils/
+    └── dateUtils.js                 # Formateo de fechas y cálculos
 ```
 
-## 🎨 Componentes Principales
+## Arquitectura
 
-### Sidebar
-- Navegación principal
-- Alertas de documentos vencidos
-- Información del usuario
-- Modo colapsable
+### Autenticación
 
-### Dashboard
-- Estadísticas por estado
-- Banner institucional
-- Documentos urgentes
-- Radicaciones recientes
+El flujo de autenticación funciona así:
 
-### Gestión de Documentos
-- Lista de documentos con filtros
-- Búsqueda en tiempo real
-- Vista de tarjetas
-- Modal de detalle
-
-### Formulario de Radicación
-- Validación de campos
-- Carga de archivos drag & drop
-- Resumen antes de enviar
-- Feedback visual
-
-## 🎯 Estados de Documentos
-
-| Estado | Color | Descripción |
-|--------|-------|-------------|
-| `PENDIENTE` | Azul | Sin fecha de respuesta asignada |
-| `EN_PROCESO` | Azul claro | Más de 3 días restantes |
-| `POR_VENCER` | Amarillo | 3 días o menos restantes |
-| `VENCIDO` | Rojo | Fecha superada |
-| `RESPONDIDO` | Verde | Marcado como respondido |
-
-## 🎨 Paleta de Colores
-
-```css
---navy:      #0D2545  /* Azul institucional principal */
---navy-mid:  #14376B  /* Azul medio */
---navy-lt:   #1B4F9C  /* Azul claro */
---gold:      #C9A84C  /* Dorado institucional */
---gold-lt:   #E8C97A  /* Dorado claro */
---gold-dk:   #A07828  /* Dorado oscuro */
+```
+1. Usuario abre la app
+2. AuthContext lee el token de localStorage
+3. Si no hay token → renderiza <LoginPage />
+4. Usuario hace login → backend devuelve JWT
+5. Token se guarda en localStorage
+6. App renderiza <AuthenticatedApp />
+7. Axios adjunta el token en cada petición (interceptor)
+8. Si el backend devuelve 401 → se dispara evento 'auth:logout'
+9. AuthContext limpia el estado → vuelve a <LoginPage />
 ```
 
-## 📝 Datos Mock
+### Gestión de Estado
 
-Actualmente el frontend usa datos mock (MOCK_DOCUMENTS) para desarrollo. Para conectar con el backend real:
+- **Autenticación**: React Context (`AuthContext`)
+- **Documentos**: Custom hook (`useDocuments`) con estado local
+- **UI**: Estado local por componente (`useState`)
 
-1. Asegúrate de que el backend esté corriendo
-2. Verifica que `VITE_API_URL` apunte al backend
-3. Reemplaza las funciones mock con llamadas a la API usando axios
+### Separación de Responsabilidades
 
-## 🔄 Próximos Pasos
+```
+api/          → Comunicación con el backend (sin lógica de UI)
+hooks/        → Lógica de negocio y estado
+components/   → Presentación pura
+context/      → Estado global compartido
+utils/        → Funciones puras reutilizables
+constants/    → Valores estáticos
+```
 
-- [ ] Integrar con API real del backend
-- [ ] Implementar autenticación
-- [ ] Agregar paginación
-- [ ] Implementar descarga de archivos
-- [ ] Agregar exportación de reportes
-- [ ] Implementar notificaciones en tiempo real
-- [ ] Agregar tests unitarios
+## Componentes Principales
 
-## 🛠️ Scripts Disponibles
+### `AuthContext`
+Provee el estado de sesión a toda la app. Persiste el token en `localStorage`.
+
+```jsx
+const { user, isAuthenticated, login, logout, updateUser } = useAuth();
+```
+
+### `useDocuments`
+Hook que encapsula todas las operaciones CRUD de documentos.
+
+```jsx
+const {
+  documents, stats, loading, error,
+  fetchAll, createDocument, updateDocument,
+  markAsResponded, removeDocument
+} = useDocuments();
+```
+
+### `Button`
+Componente de botón con variantes: `primary`, `accent`, `outline`, `ghost`, `danger`, `success`.
+
+```jsx
+<Button variant="primary" icon={<Save size={15} />} onClick={handleSave}>
+  Guardar
+</Button>
+```
+
+### `StatusBadge`
+Badge visual para el estado de un documento.
+
+```jsx
+<StatusBadge status="POR_VENCER" />
+```
+
+## Despliegue
+
+### Build de Producción
 
 ```bash
-npm run dev      # Desarrollo con hot-reload
-npm run build    # Compilar para producción
-npm run preview  # Preview de build de producción
-npm run lint     # Linter
+# Con la URL del backend de producción
+VITE_API_URL=https://api.gesgov.com/api/v1 npm run build
 ```
 
-## 📱 Responsividad
+El build genera la carpeta `dist/` con archivos estáticos listos para servir.
 
-El diseño está optimizado para:
-- Desktop (1920px+)
-- Laptop (1366px+)
-- Tablet (768px+)
-- Mobile (en desarrollo)
+### Nginx (recomendado)
 
-## 🎭 Tipografías
+Usa el `nginx.conf` incluido en el proyecto. Configuración clave para SPA:
 
-- **Títulos:** Libre Baskerville (serif)
-- **Cuerpo:** Source Sans 3 (sans-serif)
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
 
-## 🚀 Despliegue
+### Docker
 
-### Vercel (Recomendado)
 ```bash
-npm run build
-# Subir carpeta dist/ a Vercel
+# Construir imagen con la URL del backend
+docker build \
+  --build-arg VITE_API_URL=https://api.gesgov.com/api/v1 \
+  -t gesgov-frontend .
+
+# Ejecutar
+docker run -d -p 80:80 --name gesgov-frontend gesgov-frontend
 ```
+
+O usar Docker Compose desde la raíz:
+
+```bash
+docker compose up -d --build frontend
+```
+
+### Vercel
+
+1. Conecta el repositorio en [vercel.com](https://vercel.com)
+2. Configura:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+3. Agrega la variable de entorno `VITE_API_URL` en el panel de Vercel
+4. Deploy
 
 ### Netlify
-```bash
-npm run build
-# Subir carpeta dist/ a Netlify
-```
 
-## 📄 Licencia
+1. Conecta el repositorio en [netlify.com](https://netlify.com)
+2. Configura:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+3. Agrega `VITE_API_URL` en Environment Variables
+4. Crea el archivo `public/_redirects`:
+   ```
+   /*  /index.html  200
+   ```
 
-Proyecto privado - Alcaldía Municipal
+## Convenciones de Código
 
----
+- **Componentes**: PascalCase (`DocumentsList.jsx`)
+- **Hooks**: camelCase con prefijo `use` (`useDocuments.js`)
+- **Constantes de módulo**: UPPER_SNAKE_CASE (`INPUT_BASE`, `FEATURES`)
+- **Componentes auxiliares**: Definidos **fuera** del componente padre para evitar re-renders
+- **Estilos**: Objetos JavaScript con variables CSS (`var(--primary)`)
 
-**Desarrollado con React + Vite** ⚛️
+> **Regla importante**: Nunca definir componentes dentro de otros componentes. Esto causa que React los re-monte en cada render, perdiendo el foco de los inputs.
+
+## Paleta de Colores
+
+| Variable | Valor | Uso |
+|----------|-------|-----|
+| `--primary` | `#2563EB` | Acciones principales, links |
+| `--primary-dk` | `#1D4ED8` | Hover de primary |
+| `--accent` | `#F59E0B` | Acciones secundarias |
+| `--success` | `#10B981` | Estados positivos |
+| `--danger` | `#EF4444` | Errores, eliminación |
+| `--warning` | `#F59E0B` | Alertas |
+| `--sidebar-bg` | `#0F172A` | Fondo del sidebar |
+| `--text-1` | `#0F172A` | Texto principal |
+| `--text-3` | `#64748B` | Texto secundario |
+| `--border` | `#E2E8F0` | Bordes |

@@ -17,18 +17,18 @@ export function useDocuments() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
     try {
       const [docsData, statsData] = await Promise.all([
         documentsApi.getAll(),
         documentsApi.getStats(),
       ]);
-      
       setDocuments(docsData);
       setStats(statsData);
     } catch (err) {
-      setError(err.message || 'Error al cargar documentos');
-      console.error('Error fetching documents:', err);
+      // Los 401 los maneja el interceptor de axios → no mostrar error de UI
+      if (err.response?.status !== 401) {
+        setError(err.message || 'Error al cargar documentos');
+      }
     } finally {
       setLoading(false);
     }

@@ -7,8 +7,9 @@ import {
   ChevronRight,
   AlertTriangle,
   Building2,
-  User,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Panel Principal',    Icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 ];
 
 export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
+  const { user, logout } = useAuth();
   const vencidos  = stats.VENCIDO    || 0;
   const porVencer = stats.POR_VENCER || 0;
   const totalDocs = Object.values(stats).reduce((s, v) => s + v, 0);
@@ -238,51 +240,103 @@ export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
           {collapsed ? <ChevronRight size={15} /> : <><ChevronLeft size={15} /><span>Colapsar</span></>}
         </button>
 
-        {/* Usuario */}
+        {/* Usuario + Logout */}
         {!collapsed && (
           <div
             style={{
+              marginTop: 8,
               padding: '10px 12px',
               background: 'rgba(255,255,255,.05)',
               borderRadius: 8,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
               animation: 'fadeIn .2s ease',
             }}
           >
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <User size={14} color="#fff" />
-            </div>
-            <div style={{ overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div
                 style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
                   color: '#fff',
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                 }}
               >
-                Juan Secretario
+                {user?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
               </div>
-              <div style={{ color: 'rgba(255,255,255,.35)', fontSize: 11 }}>
-                Administrador
+              <div style={{ overflow: 'hidden', flex: 1 }}>
+                <div
+                  style={{
+                    color: '#fff',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {user?.name || 'Usuario'}
+                </div>
+                <div style={{ color: 'rgba(255,255,255,.35)', fontSize: 11 }}>
+                  {user?.role || 'Sin rol'}
+                </div>
               </div>
+              <button
+                onClick={logout}
+                title="Cerrar sesión"
+                style={{
+                  background: 'rgba(239,68,68,.15)',
+                  border: '1px solid rgba(239,68,68,.25)',
+                  borderRadius: 7,
+                  padding: '5px',
+                  cursor: 'pointer',
+                  color: '#FCA5A5',
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'all .15s',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(239,68,68,.3)';
+                  e.currentTarget.style.color = '#FEE2E2';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(239,68,68,.15)';
+                  e.currentTarget.style.color = '#FCA5A5';
+                }}
+              >
+                <LogOut size={13} />
+              </button>
             </div>
           </div>
+        )}
+        {collapsed && (
+          <button
+            onClick={logout}
+            title="Cerrar sesión"
+            style={{
+              width: '100%',
+              padding: '8px',
+              borderRadius: 8,
+              background: 'rgba(239,68,68,.1)',
+              border: '1px solid rgba(239,68,68,.2)',
+              color: '#FCA5A5',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 8,
+              transition: 'all .15s',
+            }}
+          >
+            <LogOut size={14} />
+          </button>
         )}
       </div>
     </aside>

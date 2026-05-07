@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User, Bell, Shield, Palette, Save, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../common';
+import { useAuth } from '../../context/AuthContext';
 
 const Section = ({ title, icon: Icon, children }) => (
   <div
@@ -115,11 +116,14 @@ const Toggle = ({ checked, onChange, label }) => (
 );
 
 export function SettingsPage() {
+  const { user, updateUser } = useAuth();
+
   const [profile, setProfile] = useState({
-    name: 'Juan Secretario',
-    email: 'jsecretario@alcaldia.gov.co',
-    role: 'Administrador',
-    phone: '+57 300 000 0000',
+    name:     user?.name     || '',
+    email:    user?.email    || '',
+    role:     user?.role     || '',
+    position: user?.position || '',
+    phone:    user?.phone    || '',
   });
 
   const [notifications, setNotifications] = useState({
@@ -133,6 +137,7 @@ export function SettingsPage() {
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
+    updateUser({ name: profile.name, position: profile.position, phone: profile.phone });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };

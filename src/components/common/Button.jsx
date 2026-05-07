@@ -1,5 +1,5 @@
 /**
- * Componente Button reutilizable con variantes
+ * Componente Button reutilizable con variantes modernas
  */
 export function Button({
   children,
@@ -11,43 +11,63 @@ export function Button({
   icon,
   type = 'button',
 }) {
-  const baseStyles = {
+  const base = {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 7,
     border: 'none',
     cursor: disabled ? 'not-allowed' : 'pointer',
     fontWeight: 600,
-    borderRadius: 8,
+    borderRadius: 'var(--radius)',
     transition: 'all .18s',
-    opacity: disabled ? 0.6 : 1,
-    fontFamily: "'Source Sans 3', sans-serif",
+    opacity: disabled ? 0.55 : 1,
+    fontFamily: "'Inter', sans-serif",
+    letterSpacing: '-.01em',
+    whiteSpace: 'nowrap',
   };
 
-  const sizeStyles = {
+  const sizes = {
     sm: { padding: '6px 14px', fontSize: 13 },
-    md: { padding: '9px 20px', fontSize: 14 },
-    lg: { padding: '12px 28px', fontSize: 15 },
+    md: { padding: '9px 18px', fontSize: 14 },
+    lg: { padding: '11px 24px', fontSize: 15 },
   };
 
-  const variantStyles = {
-    primary: { background: 'var(--navy)', color: '#fff' },
-    gold: { background: 'var(--gold)', color: 'var(--navy)' },
+  const variants = {
+    primary: {
+      background: 'var(--primary)',
+      color: '#fff',
+      boxShadow: '0 1px 3px rgba(37,99,235,.3)',
+    },
+    accent: {
+      background: 'var(--accent)',
+      color: '#fff',
+      boxShadow: '0 1px 3px rgba(245,158,11,.3)',
+    },
+    // Mantener 'gold' como alias de accent para compatibilidad
+    gold: {
+      background: 'var(--accent)',
+      color: '#fff',
+      boxShadow: '0 1px 3px rgba(245,158,11,.3)',
+    },
     outline: {
       background: 'transparent',
-      color: 'var(--navy)',
-      border: '1.5px solid var(--navy-lt)',
+      color: 'var(--text-2)',
+      border: '1.5px solid var(--border-2)',
     },
-    ghost: { background: 'transparent', color: 'var(--gray-600)' },
+    ghost: {
+      background: 'transparent',
+      color: 'var(--text-3)',
+    },
     danger: {
-      background: '#FEF2F2',
-      color: '#B91C1C',
-      border: '1px solid #FECACA',
+      background: 'var(--danger-bg)',
+      color: '#DC2626',
+      border: '1px solid var(--danger-border)',
     },
     success: {
-      background: '#F0FDF4',
-      color: '#15803D',
-      border: '1px solid #BBF7D0',
+      background: 'var(--success-bg)',
+      color: '#059669',
+      border: '1px solid var(--success-border)',
     },
   };
 
@@ -56,12 +76,7 @@ export function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      style={{
-        ...baseStyles,
-        ...sizeStyles[size],
-        ...variantStyles[variant],
-        ...style,
-      }}
+      style={{ ...base, ...sizes[size], ...variants[variant], ...style }}
     >
       {icon && icon}
       {children}

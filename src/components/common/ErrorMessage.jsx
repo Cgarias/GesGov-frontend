@@ -1,36 +1,45 @@
-/**
- * Componente para mostrar mensajes de error
- */
+import { AlertTriangle } from 'lucide-react';
+import { Button } from './Button';
+
 export function ErrorMessage({ message, onRetry }) {
   return (
     <div
       style={{
-        padding: '40px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 320,
+        gap: 12,
+        color: 'var(--text-3)',
+        padding: 32,
         textAlign: 'center',
-        color: 'var(--gray-500)',
       }}
     >
-      <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
-      <h3 style={{ color: 'var(--navy)', marginBottom: 8, fontSize: 18 }}>
-        Error al cargar datos
-      </h3>
-      <p style={{ fontSize: 14, marginBottom: 20 }}>{message}</p>
+      <div
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: '50%',
+          background: 'var(--danger-bg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#DC2626',
+        }}
+      >
+        <AlertTriangle size={24} />
+      </div>
+      <div>
+        <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-1)', marginBottom: 4 }}>
+          Ocurrió un error
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-3)' }}>{message}</p>
+      </div>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          style={{
-            padding: '10px 24px',
-            background: 'var(--navy)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            cursor: 'pointer',
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
+        <Button variant="outline" size="sm" onClick={onRetry}>
           Reintentar
-        </button>
+        </Button>
       )}
     </div>
   );

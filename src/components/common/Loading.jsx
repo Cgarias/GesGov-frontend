@@ -1,6 +1,3 @@
-/**
- * Componente de carga
- */
 export function Loading({ message = 'Cargando...' }) {
   return (
     <div
@@ -9,28 +6,23 @@ export function Loading({ message = 'Cargando...' }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '60px 20px',
-        color: 'var(--gray-400)',
+        height: 320,
+        gap: 16,
+        color: 'var(--text-3)',
       }}
     >
       <div
         style={{
-          width: 40,
-          height: 40,
-          border: '4px solid var(--gray-200)',
-          borderTop: '4px solid var(--navy)',
+          width: 36,
+          height: 36,
+          border: '3px solid var(--border)',
+          borderTopColor: 'var(--primary)',
           borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          marginBottom: 16,
+          animation: 'spin 0.7s linear infinite',
         }}
       />
-      <p style={{ fontSize: 14 }}>{message}</p>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <span style={{ fontSize: 14 }}>{message}</span>
     </div>
   );
 }

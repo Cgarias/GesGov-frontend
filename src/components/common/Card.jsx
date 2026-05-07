@@ -1,17 +1,18 @@
 /**
  * Componente Card reutilizable
  */
-export function Card({ children, style = {}, animate = false, onClick }) {
+export function Card({ children, style = {}, animate, onClick, onMouseEnter, onMouseLeave }) {
   return (
     <div
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
-        background: '#fff',
-        borderRadius: 12,
-        border: '1px solid var(--gray-200)',
+        background: 'var(--surface)',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border)',
         boxShadow: 'var(--shadow-sm)',
-        animation: animate ? 'fadeUp .4s ease both' : 'none',
-        cursor: onClick ? 'pointer' : 'default',
+        animation: animate ? 'fadeUp .35s ease both' : undefined,
         ...style,
       }}
     >

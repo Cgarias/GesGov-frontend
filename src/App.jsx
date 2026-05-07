@@ -5,8 +5,8 @@ import {
   DocumentsList,
   UploadForm,
   DocumentDetailModal,
+  SettingsPage,
 } from './components/documents';
-import { Card } from './components/common';
 import { useDocuments } from './hooks/useDocuments';
 import { injectGlobalStyles } from './styles/globalStyles';
 
@@ -23,25 +23,17 @@ const PAGE_META = {
     title: 'Radicar Documento',
     subtitle: 'Registro de nuevos documentos al sistema',
   },
-  reports: {
-    title: 'Reportes',
-    subtitle: 'Indicadores y estadísticas de gestión',
-  },
   settings: {
     title: 'Configuración',
-    subtitle: 'Administración del sistema',
+    subtitle: 'Ajustes de usuario y preferencias del sistema',
   },
 };
 
-/**
- * Componente principal de la aplicación
- */
 export default function App() {
-  const [page, setPage] = useState('dashboard');
-  const [collapsed, setCollapsed] = useState(false);
+  const [page, setPage]                   = useState('dashboard');
+  const [collapsed, setCollapsed]         = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
 
-  // Hook personalizado para gestionar documentos
   const {
     documents,
     stats,
@@ -53,24 +45,14 @@ export default function App() {
     removeDocument,
   } = useDocuments();
 
-  // Inyectar estilos globales
   useEffect(() => {
     return injectGlobalStyles();
   }, []);
 
   const meta = PAGE_META[page] || PAGE_META.dashboard;
 
-  const handleCreateDocument = async (payload) => {
-    await createDocument(payload);
-  };
-
-  const handleUploadSuccess = () => {
-    setPage('documents');
-  };
-
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {/* Sidebar */}
       <Sidebar
         active={page}
         onNav={setPage}
@@ -79,16 +61,7 @@ export default function App() {
         stats={stats}
       />
 
-      {/* Contenido principal */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Topbar */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
         <Topbar
           title={meta.title}
           subtitle={meta.subtitle}
@@ -96,8 +69,13 @@ export default function App() {
           stats={stats}
         />
 
-        {/* Contenido */}
-        <main style={{ flex: 1, overflowY: 'auto', background: 'var(--gray-50)' }}>
+        <main
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            background: 'var(--surface-2)',
+          }}
+        >
           {page === 'dashboard' && (
             <Dashboard
               stats={stats}
@@ -120,38 +98,15 @@ export default function App() {
 
           {page === 'upload' && (
             <UploadForm
-              onSubmit={handleCreateDocument}
-              onSuccess={handleUploadSuccess}
+              onSubmit={createDocument}
+              onSuccess={() => setPage('documents')}
             />
           )}
 
-          {page === 'reports' && (
-            <div style={{ padding: '28px 32px' }}>
-              <Card style={{ padding: '40px', textAlign: 'center' }} animate>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
-                <h3 style={{ marginBottom: 8 }}>Reportes</h3>
-                <p style={{ color: 'var(--gray-400)', fontSize: 14 }}>
-                  Sección en desarrollo. Aquí se mostrarán estadísticas e indicadores.
-                </p>
-              </Card>
-            </div>
-          )}
-
-          {page === 'settings' && (
-            <div style={{ padding: '28px 32px' }}>
-              <Card style={{ padding: '40px', textAlign: 'center' }} animate>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>⚙️</div>
-                <h3 style={{ marginBottom: 8 }}>Configuración del Sistema</h3>
-                <p style={{ color: 'var(--gray-400)', fontSize: 14 }}>
-                  Esta sección está en desarrollo.
-                </p>
-              </Card>
-            </div>
-          )}
+          {page === 'settings' && <SettingsPage />}
         </main>
       </div>
 
-      {/* Modal de detalle */}
       {selectedDocument && (
         <DocumentDetailModal
           document={selectedDocument}

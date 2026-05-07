@@ -1,105 +1,185 @@
-import { Card, Button, Loading, ErrorMessage } from '../common';
+import {
+  FileText,
+  RefreshCw,
+  AlertTriangle,
+  XCircle,
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  TrendingUp,
+} from 'lucide-react';
+import { Button, Loading, ErrorMessage } from '../common';
 
-/**
- * Vista del Dashboard con estadísticas
- */
+const STAT_CONFIG = [
+  {
+    key: 'total',
+    label: 'Total Documentos',
+    Icon: FileText,
+    color: '#2563EB',
+    bg: '#EFF6FF',
+    border: '#BFDBFE',
+  },
+  {
+    key: 'EN_PROCESO',
+    label: 'En Proceso',
+    Icon: RefreshCw,
+    color: '#7C3AED',
+    bg: '#F5F3FF',
+    border: '#DDD6FE',
+  },
+  {
+    key: 'POR_VENCER',
+    label: 'Por Vencer',
+    Icon: AlertTriangle,
+    color: '#D97706',
+    bg: '#FFFBEB',
+    border: '#FDE68A',
+  },
+  {
+    key: 'VENCIDO',
+    label: 'Vencidos',
+    Icon: XCircle,
+    color: '#DC2626',
+    bg: '#FEF2F2',
+    border: '#FECACA',
+  },
+  {
+    key: 'RESPONDIDO',
+    label: 'Respondidos',
+    Icon: CheckCircle2,
+    color: '#059669',
+    bg: '#ECFDF5',
+    border: '#A7F3D0',
+  },
+  {
+    key: 'PENDIENTE',
+    label: 'Pendientes',
+    Icon: Clock,
+    color: '#475569',
+    bg: '#F8FAFC',
+    border: '#E2E8F0',
+  },
+];
+
 export function Dashboard({ stats, loading, error, onNav, onRetry }) {
-  if (loading) {
-    return <Loading message="Cargando estadísticas..." />;
-  }
+  if (loading) return <Loading message="Cargando estadísticas..." />;
+  if (error)   return <ErrorMessage message={error} onRetry={onRetry} />;
 
-  if (error) {
-    return <ErrorMessage message={error} onRetry={onRetry} />;
-  }
+  const total = Object.values(stats).reduce((s, v) => s + v, 0);
+  const statsWithTotal = { ...stats, total };
 
-  const total = Object.values(stats).reduce((sum, val) => sum + val, 0);
-
-  const StatCard = ({ label, value, color, bg, border, icon }) => (
-    <div
-      style={{
-        background: bg,
-        border: `1px solid ${border}`,
-        borderRadius: 12,
-        padding: '20px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        animation: 'fadeUp .4s ease both',
-        boxShadow: 'var(--shadow-sm)',
-      }}
-    >
-      <div
-        style={{
-          width: 48,
-          height: 48,
-          borderRadius: 12,
-          background: color,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          fontSize: 22,
-          flexShrink: 0,
-        }}
-      >
-        {icon}
-      </div>
-      <div>
-        <div
-          style={{
-            fontSize: 28,
-            fontWeight: 700,
-            color: 'var(--navy)',
-            lineHeight: 1.1,
-          }}
-        >
-          {value}
-        </div>
-        <div style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 2 }}>
-          {label}
-        </div>
-      </div>
-    </div>
-  );
+  const urgentes = (stats.VENCIDO || 0) + (stats.POR_VENCER || 0);
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1200 }}>
-      {/* Banner institucional */}
+    <div style={{ padding: '24px 28px', maxWidth: 1200 }}>
+
+      {/* Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, var(--navy) 0%, var(--navy-lt) 100%)',
-          borderRadius: 14,
-          padding: '28px 36px',
-          marginBottom: 28,
+          background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #3B82F6 100%)',
+          borderRadius: 'var(--radius-xl)',
+          padding: '28px 32px',
+          marginBottom: 24,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          boxShadow: 'var(--shadow-md)',
+          boxShadow: '0 8px 24px rgba(37,99,235,.25)',
           animation: 'fadeUp .4s ease both',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div>
+        {/* Decoración */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -40,
+            top: -40,
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,.05)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            right: 60,
+            bottom: -60,
+            width: 160,
+            height: 160,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,.04)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div style={{ position: 'relative' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(255,255,255,.15)',
+              borderRadius: 99,
+              padding: '3px 12px',
+              fontSize: 11,
+              color: 'rgba(255,255,255,.85)',
+              fontWeight: 600,
+              marginBottom: 10,
+              letterSpacing: '.04em',
+            }}
+          >
+            <TrendingUp size={11} /> SISTEMA ACTIVO
+          </div>
           <h2
             style={{
               color: '#fff',
-              fontFamily: "'Libre Baskerville', serif",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: 22,
               marginBottom: 6,
+              letterSpacing: '-.03em',
             }}
           >
-            Sistema de Gestión de Tiempo de Respuesta
+            Sistema de Gestión Documental
           </h2>
-          <p style={{ color: 'rgba(255,255,255,.65)', fontSize: 14, margin: 0 }}>
-            Control y seguimiento de documentos institucionales · Alcaldía Municipal
+          <p style={{ color: 'rgba(255,255,255,.6)', fontSize: 13, margin: 0 }}>
+            Control y seguimiento de tiempos de respuesta · Alcaldía Municipal
           </p>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ color: 'var(--gold-lt)', fontSize: 13, fontWeight: 600 }}>
-            Vigencia 2025
+
+        <div style={{ textAlign: 'right', position: 'relative' }}>
+          <div
+            style={{
+              fontSize: 40,
+              fontWeight: 800,
+              color: '#fff',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              lineHeight: 1,
+            }}
+          >
+            {total}
           </div>
-          <div style={{ color: 'rgba(255,255,255,.5)', fontSize: 12, marginTop: 2 }}>
-            {total} documentos activos
+          <div style={{ color: 'rgba(255,255,255,.55)', fontSize: 12, marginTop: 4 }}>
+            documentos activos
           </div>
+          {urgentes > 0 && (
+            <div
+              style={{
+                marginTop: 8,
+                background: 'rgba(239,68,68,.25)',
+                border: '1px solid rgba(239,68,68,.4)',
+                borderRadius: 99,
+                padding: '3px 10px',
+                fontSize: 11,
+                color: '#FCA5A5',
+                fontWeight: 600,
+              }}
+            >
+              ⚠ {urgentes} requieren atención
+            </div>
+          )}
         </div>
       </div>
 
@@ -107,64 +187,110 @@ export function Dashboard({ stats, loading, error, onNav, onRetry }) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))',
-          gap: 16,
-          marginBottom: 28,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+          gap: 14,
+          marginBottom: 24,
         }}
       >
-        <StatCard
-          label="Total Documentos"
-          value={total}
-          color="#0D2545"
-          bg="#EEF2FF"
-          border="#C7D2FE"
-          icon="📋"
-        />
-        <StatCard
-          label="En Proceso"
-          value={stats.EN_PROCESO || 0}
-          color="#1D4ED8"
-          bg="#EFF6FF"
-          border="#BFDBFE"
-          icon="🔄"
-        />
-        <StatCard
-          label="Por Vencer"
-          value={stats.POR_VENCER || 0}
-          color="#B45309"
-          bg="#FFFBEB"
-          border="#FDE68A"
-          icon="⚠️"
-        />
-        <StatCard
-          label="Vencidos"
-          value={stats.VENCIDO || 0}
-          color="#B91C1C"
-          bg="#FEF2F2"
-          border="#FECACA"
-          icon="🔴"
-        />
-        <StatCard
-          label="Respondidos"
-          value={stats.RESPONDIDO || 0}
-          color="#15803D"
-          bg="#F0FDF4"
-          border="#BBF7D0"
-          icon="✅"
-        />
+        {STAT_CONFIG.map(({ key, label, Icon, color, bg, border }, i) => (
+          <div
+            key={key}
+            style={{
+              background: 'var(--surface)',
+              border: `1px solid ${border}`,
+              borderRadius: 'var(--radius-lg)',
+              padding: '18px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              animation: `fadeUp .4s ease ${i * 0.05}s both`,
+              boxShadow: 'var(--shadow-sm)',
+              transition: 'transform .2s, box-shadow .2s',
+              cursor: 'default',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+            }}
+          >
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 11,
+                background: bg,
+                border: `1px solid ${border}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                color,
+              }}
+            >
+              <Icon size={19} strokeWidth={2} />
+            </div>
+            <div>
+              <div
+                style={{
+                  fontSize: 26,
+                  fontWeight: 800,
+                  color: 'var(--text-1)',
+                  lineHeight: 1,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}
+              >
+                {statsWithTotal[key] || 0}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 3 }}>
+                {label}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Mensaje de bienvenida */}
-      <Card animate style={{ padding: '40px', textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>🚀</div>
-        <h3 style={{ marginBottom: 8 }}>Sistema Operativo</h3>
-        <p style={{ color: 'var(--gray-400)', fontSize: 14, marginBottom: 20 }}>
-          El sistema está funcionando correctamente. Navega por las secciones para gestionar documentos.
-        </p>
-        <Button onClick={() => onNav('documents')} variant="gold">
+      {/* Acciones rápidas */}
+      <div
+        style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-lg)',
+          padding: '24px 28px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: 'var(--shadow-sm)',
+          animation: 'fadeUp .4s ease .3s both',
+        }}
+      >
+        <div>
+          <h3
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: 'var(--text-1)',
+              marginBottom: 4,
+            }}
+          >
+            Gestión de Documentos
+          </h3>
+          <p style={{ fontSize: 13, color: 'var(--text-3)', margin: 0 }}>
+            Consulta, filtra y administra todos los documentos radicados en el sistema.
+          </p>
+        </div>
+        <Button
+          onClick={() => onNav('documents')}
+          variant="primary"
+          icon={<ArrowRight size={15} />}
+          style={{ flexShrink: 0 }}
+        >
           Ver Documentos
         </Button>
-      </Card>
+      </div>
     </div>
   );
 }

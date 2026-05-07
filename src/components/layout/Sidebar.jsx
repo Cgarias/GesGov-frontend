@@ -1,78 +1,86 @@
-import { Icons } from '../common/Icons';
+import {
+  LayoutDashboard,
+  FileText,
+  FilePlus,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  AlertTriangle,
+  Building2,
+  User,
+} from 'lucide-react';
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Panel Principal', icon: Icons.Dashboard },
-  { id: 'documents', label: 'Documentos', icon: Icons.Documents },
-  { id: 'upload', label: 'Radicar Documento', icon: Icons.Upload },
-  { id: 'reports', label: 'Reportes', icon: Icons.Reports },
-  { id: 'settings', label: 'Configuración', icon: Icons.Settings },
+  { id: 'dashboard', label: 'Panel Principal',    Icon: LayoutDashboard },
+  { id: 'documents', label: 'Documentos',          Icon: FileText },
+  { id: 'upload',    label: 'Radicar Documento',   Icon: FilePlus },
+  { id: 'settings',  label: 'Configuración',       Icon: Settings },
 ];
 
-/**
- * Componente Sidebar - Navegación lateral
- */
 export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
-  const vencidos = stats.VENCIDO || 0;
+  const vencidos  = stats.VENCIDO    || 0;
   const porVencer = stats.POR_VENCER || 0;
-  const totalDocs = Object.values(stats).reduce((sum, val) => sum + val, 0);
+  const totalDocs = Object.values(stats).reduce((s, v) => s + v, 0);
 
   return (
     <aside
       style={{
-        width: collapsed ? 68 : 'var(--sidebar-w)',
-        minWidth: collapsed ? 68 : 'var(--sidebar-w)',
-        background: 'var(--navy)',
+        width: collapsed ? 64 : 'var(--sidebar-w)',
+        minWidth: collapsed ? 64 : 'var(--sidebar-w)',
+        background: 'var(--sidebar-bg)',
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
         position: 'sticky',
         top: 0,
-        transition: 'width .25s ease, min-width .25s ease',
+        transition: 'width .22s cubic-bezier(.4,0,.2,1), min-width .22s cubic-bezier(.4,0,.2,1)',
         overflow: 'hidden',
         flexShrink: 0,
+        borderRight: '1px solid rgba(255,255,255,.06)',
       }}
     >
       {/* Logo */}
       <div
         style={{
-          padding: collapsed ? '20px 16px' : '24px 20px',
-          borderBottom: '1px solid rgba(255,255,255,.08)',
+          padding: collapsed ? '18px 14px' : '20px 18px',
+          borderBottom: '1px solid rgba(255,255,255,.07)',
           display: 'flex',
           alignItems: 'center',
-          gap: 12,
-          minHeight: 80,
+          gap: 11,
+          minHeight: 72,
         }}
       >
         <div
           style={{
-            width: 36,
-            height: 36,
+            width: 34,
+            height: 34,
             flexShrink: 0,
-            background: 'linear-gradient(145deg, var(--gold), var(--gold-dk))',
-            borderRadius: 8,
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%)',
+            borderRadius: 9,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(0,0,0,.3)',
+            boxShadow: '0 2px 8px rgba(37,99,235,.4)',
           }}
         >
-          <Icons.Office />
+          <Building2 size={17} color="#fff" />
         </div>
         {!collapsed && (
-          <div style={{ animation: 'fadeIn .2s ease' }}>
+          <div style={{ animation: 'slideRight .2s ease' }}>
             <div
               style={{
-                fontFamily: "'Libre Baskerville', serif",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
                 color: '#fff',
                 fontSize: 13,
                 fontWeight: 700,
                 lineHeight: 1.2,
+                letterSpacing: '-.02em',
               }}
             >
               Alcaldía Municipal
             </div>
-            <div style={{ color: 'var(--gold-lt)', fontSize: 11, marginTop: 2 }}>
-              Sistema de Gestión Documental
+            <div style={{ color: 'rgba(255,255,255,.4)', fontSize: 11, marginTop: 2 }}>
+              Gestión Documental
             </div>
           </div>
         )}
@@ -82,9 +90,9 @@ export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
       {!collapsed && (vencidos > 0 || porVencer > 0) && (
         <div
           style={{
-            margin: '12px 12px 0',
-            background: 'rgba(239,68,68,.12)',
-            border: '1px solid rgba(239,68,68,.3)',
+            margin: '10px 10px 0',
+            background: 'rgba(239,68,68,.1)',
+            border: '1px solid rgba(239,68,68,.2)',
             borderRadius: 8,
             padding: '10px 12px',
             animation: 'fadeIn .3s ease',
@@ -93,24 +101,24 @@ export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
           <div
             style={{
               color: '#FCA5A5',
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
-              marginBottom: 4,
+              gap: 5,
+              marginBottom: 5,
             }}
           >
-            <Icons.Alert /> Alertas activas
+            <AlertTriangle size={12} /> Alertas activas
           </div>
           {vencidos > 0 && (
             <div style={{ color: '#FCA5A5', fontSize: 11 }}>
-              • {vencidos} documento(s) vencido(s)
+              · {vencidos} documento{vencidos > 1 ? 's' : ''} vencido{vencidos > 1 ? 's' : ''}
             </div>
           )}
           {porVencer > 0 && (
             <div style={{ color: '#FCD34D', fontSize: 11 }}>
-              • {porVencer} por vencer pronto
+              · {porVencer} por vencer pronto
             </div>
           )}
         </div>
@@ -120,52 +128,71 @@ export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
       <nav
         style={{
           flex: 1,
-          padding: '16px 10px',
+          padding: '12px 8px',
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
+          overflowY: 'auto',
         }}
       >
-        {NAV_ITEMS.map((item) => {
-          const isActive = active === item.id;
-          const IconComponent = item.icon;
-
+        {NAV_ITEMS.map(({ id, label, Icon }) => {
+          const isActive = active === id;
           return (
             <button
-              key={item.id}
-              onClick={() => onNav(item.id)}
-              title={collapsed ? item.label : undefined}
+              key={id}
+              onClick={() => onNav(id)}
+              title={collapsed ? label : undefined}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: collapsed ? 0 : 12,
+                gap: collapsed ? 0 : 10,
                 justifyContent: collapsed ? 'center' : 'flex-start',
-                padding: collapsed ? '11px 0' : '11px 14px',
+                padding: collapsed ? '10px 0' : '10px 12px',
                 borderRadius: 8,
                 border: 'none',
                 cursor: 'pointer',
-                background: isActive ? 'rgba(201,168,76,.18)' : 'transparent',
-                color: isActive ? 'var(--gold-lt)' : 'rgba(255,255,255,.65)',
+                background: isActive ? 'var(--sidebar-active)' : 'transparent',
+                color: isActive ? '#60A5FA' : 'rgba(255,255,255,.55)',
                 fontWeight: isActive ? 600 : 400,
-                fontSize: 14,
+                fontSize: 13.5,
                 transition: 'all .15s',
                 width: '100%',
-                borderLeft: isActive
-                  ? '3px solid var(--gold)'
-                  : '3px solid transparent',
+                position: 'relative',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) e.currentTarget.style.background = 'var(--sidebar-hover)';
+                if (!isActive) e.currentTarget.style.color = 'rgba(255,255,255,.85)';
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) e.currentTarget.style.background = 'transparent';
+                if (!isActive) e.currentTarget.style.color = 'rgba(255,255,255,.55)';
               }}
             >
-              <IconComponent />
-              {!collapsed && <span>{item.label}</span>}
-              {!collapsed && item.id === 'documents' && totalDocs > 0 && (
+              {/* Indicador activo */}
+              {isActive && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: '20%',
+                    height: '60%',
+                    width: 3,
+                    background: '#60A5FA',
+                    borderRadius: '0 3px 3px 0',
+                  }}
+                />
+              )}
+              <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} />
+              {!collapsed && <span>{label}</span>}
+              {!collapsed && id === 'documents' && totalDocs > 0 && (
                 <span
                   style={{
                     marginLeft: 'auto',
-                    background: 'rgba(255,255,255,.12)',
-                    color: 'rgba(255,255,255,.7)',
+                    background: 'rgba(255,255,255,.1)',
+                    color: 'rgba(255,255,255,.6)',
                     fontSize: 11,
                     padding: '1px 7px',
-                    borderRadius: 10,
+                    borderRadius: 99,
                     fontWeight: 600,
                   }}
                 >
@@ -177,39 +204,44 @@ export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
         })}
       </nav>
 
-      {/* Toggle + User */}
-      <div
-        style={{
-          borderTop: '1px solid rgba(255,255,255,.08)',
-          padding: '12px 10px',
-        }}
-      >
+      {/* Footer: toggle + usuario */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,.07)', padding: '10px 8px' }}>
+        {/* Toggle */}
         <button
           onClick={onToggle}
+          title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
           style={{
             width: '100%',
-            padding: '9px',
+            padding: '8px',
             borderRadius: 8,
             background: 'rgba(255,255,255,.05)',
-            border: '1px solid rgba(255,255,255,.08)',
-            color: 'rgba(255,255,255,.5)',
+            border: '1px solid rgba(255,255,255,.07)',
+            color: 'rgba(255,255,255,.4)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 12,
             gap: 8,
+            fontSize: 12,
             transition: 'all .15s',
+            marginBottom: 8,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(255,255,255,.09)';
+            e.currentTarget.style.color = 'rgba(255,255,255,.7)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(255,255,255,.05)';
+            e.currentTarget.style.color = 'rgba(255,255,255,.4)';
           }}
         >
-          <Icons.Menu />
-          {!collapsed && <span>Colapsar menú</span>}
+          {collapsed ? <ChevronRight size={15} /> : <><ChevronLeft size={15} /><span>Colapsar</span></>}
         </button>
 
+        {/* Usuario */}
         {!collapsed && (
           <div
             style={{
-              marginTop: 10,
               padding: '10px 12px',
               background: 'rgba(255,255,255,.05)',
               borderRadius: 8,
@@ -221,26 +253,32 @@ export function Sidebar({ active, onNav, collapsed, onToggle, stats = {} }) {
           >
             <div
               style={{
-                width: 32,
-                height: 32,
+                width: 30,
+                height: 30,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--gold), var(--gold-dk))',
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'var(--navy)',
-                fontWeight: 700,
-                fontSize: 13,
                 flexShrink: 0,
               }}
             >
-              JS
+              <User size={14} color="#fff" />
             </div>
-            <div>
-              <div style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>
+            <div style={{ overflow: 'hidden' }}>
+              <div
+                style={{
+                  color: '#fff',
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 Juan Secretario
               </div>
-              <div style={{ color: 'rgba(255,255,255,.4)', fontSize: 11 }}>
+              <div style={{ color: 'rgba(255,255,255,.35)', fontSize: 11 }}>
                 Administrador
               </div>
             </div>

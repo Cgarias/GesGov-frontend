@@ -1,254 +1,347 @@
-# GesGov — Frontend
+# GesGov Frontend
 
-Aplicación web SPA construida con React 18 y Vite para el sistema de gestión documental de la Alcaldía Municipal.
+> Aplicación web SPA para el Sistema de Gestión Documental de la Alcaldía Municipal.
 
-## Stack
+[![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite)](https://vitejs.dev)
+[![Deploy](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel)](https://vercel.com)
 
-- **Framework**: React 18 + JSX
-- **Build tool**: Vite 5
-- **Iconos**: Lucide React
-- **HTTP**: Axios
-- **Estilos**: CSS-in-JS (inline styles + variables CSS)
-- **Fuentes**: Inter + Plus Jakarta Sans (Google Fonts)
+---
+
+## Descripción
+
+SPA (Single Page Application) construida con React 18 y Vite. Consume la API REST del backend para gestionar documentos institucionales con autenticación JWT, seguimiento de estados y alertas de vencimiento.
+
+---
 
 ## Requisitos
 
 - Node.js 20+
 - npm 9+
 
-## Instalación
+---
+
+## Instalación y Ejecución
 
 ```bash
+# Instalar dependencias
 npm install
-```
 
-## Variables de Entorno
-
-Copia `.env.example` como `.env`:
-
-```bash
+# Configurar variables de entorno
 cp .env.example .env
-```
+# Editar VITE_API_URL si el backend no corre en localhost:3001
 
-| Variable | Descripción | Default |
-|----------|-------------|---------|
-| `VITE_API_URL` | URL base de la API del backend | `http://localhost:3001/api/v1` |
-
-> Las variables de Vite deben comenzar con `VITE_` para ser accesibles en el código.
-
-## Scripts
-
-```bash
-# Desarrollo con hot-reload (http://localhost:5173)
+# Desarrollo (http://localhost:5173)
 npm run dev
 
 # Build de producción
 npm run build
 
-# Preview del build de producción
+# Preview del build
 npm run preview
-
-# Linting
-npm run lint
 ```
+
+---
+
+## Variables de Entorno
+
+| Variable | Requerida | Descripción |
+|----------|-----------|-------------|
+| `VITE_API_URL` | **Sí** | URL base de la API del backend |
+
+**Desarrollo:** `VITE_API_URL=http://localhost:3001/api/v1`  
+**Producción:** `VITE_API_URL=https://gesgov-backend.onrender.com/api/v1`
+
+> Las variables de Vite deben comenzar con `VITE_` para ser accesibles en el código del navegador.
+
+---
 
 ## Estructura del Proyecto
 
 ```
 src/
-├── main.jsx                          # Entry point — monta React con AuthProvider
-├── App.jsx                           # Componente raíz — routing por estado
+├── main.jsx                              # Entry point — monta App con AuthProvider
+├── App.jsx                               # Raíz: decide entre LoginPage y AuthenticatedApp
+│
 ├── api/
-│   ├── axios.config.js               # Instancia Axios + interceptores JWT
-│   ├── auth.api.js                   # Llamadas a /auth/*
-│   └── documents.api.js              # Llamadas a /documents/*
+│   ├── axios.config.js                   # Instancia Axios + interceptores JWT/401
+│   ├── auth.api.js                       # login(), register(), getMe()
+│   └── documents.api.js                  # getAll(), getStats(), create(), update(), remove()
+│
 ├── components/
 │   ├── auth/
-│   │   └── LoginPage.jsx             # Pantalla de inicio de sesión
+│   │   └── LoginPage.jsx                 # Pantalla de inicio de sesión
+│   │
 │   ├── common/
-│   │   ├── Button.jsx                # Botón reutilizable con variantes
-│   │   ├── Card.jsx                  # Tarjeta contenedora
-│   │   ├── ErrorMessage.jsx          # Mensaje de error con retry
-│   │   ├── Icons.jsx                 # Iconos SVG legacy (compatibilidad)
-│   │   ├── Loading.jsx               # Spinner de carga
-│   │   ├── StatusBadge.jsx           # Badge de estado de documento
-│   │   └── index.js                  # Re-exportaciones
+│   │   ├── Button.jsx                    # Botón con variantes: primary, accent, outline, danger, success
+│   │   ├── Card.jsx                      # Contenedor con sombra y borde
+│   │   ├── ErrorMessage.jsx              # Mensaje de error con botón retry
+│   │   ├── Loading.jsx                   # Spinner de carga
+│   │   ├── StatusBadge.jsx               # Badge de estado con punto de color
+│   │   └── index.js                      # Re-exportaciones
+│   │
 │   ├── documents/
-│   │   ├── Dashboard.jsx             # Panel principal con estadísticas
-│   │   ├── DocumentDetailModal.jsx   # Modal de detalle de documento
-│   │   ├── DocumentsList.jsx         # Lista con búsqueda y filtros
-│   │   ├── SettingsPage.jsx          # Página de configuración
-│   │   ├── UploadForm.jsx            # Formulario de radicación
+│   │   ├── Dashboard.jsx                 # Panel con estadísticas y banner
+│   │   ├── DocumentsList.jsx             # Lista con búsqueda y filtros
+│   │   ├── DocumentDetailModal.jsx       # Modal de detalle, acciones y metadata
+│   │   ├── UploadForm.jsx                # Formulario de radicación con drag & drop
+│   │   ├── SettingsPage.jsx              # Configuración de perfil y preferencias
 │   │   └── index.js
+│   │
 │   └── layout/
-│       ├── Sidebar.jsx               # Navegación lateral
-│       ├── Topbar.jsx                # Barra superior
+│       ├── Sidebar.jsx                   # Navegación lateral con alertas y usuario
+│       ├── Topbar.jsx                    # Barra superior con título y acciones
 │       └── index.js
-├── constants/
-│   └── documentStatus.js            # Labels y colores de estados
+│
 ├── context/
-│   └── AuthContext.jsx              # Estado global de autenticación
+│   └── AuthContext.jsx                   # Estado global de sesión JWT
+│
 ├── hooks/
-│   └── useDocuments.js              # Hook para CRUD de documentos
+│   └── useDocuments.js                   # CRUD de documentos con estado local
+│
+├── constants/
+│   └── documentStatus.js                 # Labels y configuración de estados
+│
 ├── styles/
-│   └── globalStyles.js              # Variables CSS + animaciones
+│   └── globalStyles.js                   # Variables CSS + animaciones + fuentes
+│
 └── utils/
-    └── dateUtils.js                 # Formateo de fechas y cálculos
+    └── dateUtils.js                      # formatDate(), getDaysRemaining(), formatFileSize()
 ```
 
-## Arquitectura
+---
 
-### Autenticación
-
-El flujo de autenticación funciona así:
-
-```
-1. Usuario abre la app
-2. AuthContext lee el token de localStorage
-3. Si no hay token → renderiza <LoginPage />
-4. Usuario hace login → backend devuelve JWT
-5. Token se guarda en localStorage
-6. App renderiza <AuthenticatedApp />
-7. Axios adjunta el token en cada petición (interceptor)
-8. Si el backend devuelve 401 → se dispara evento 'auth:logout'
-9. AuthContext limpia el estado → vuelve a <LoginPage />
-```
-
-### Gestión de Estado
-
-- **Autenticación**: React Context (`AuthContext`)
-- **Documentos**: Custom hook (`useDocuments`) con estado local
-- **UI**: Estado local por componente (`useState`)
+## Arquitectura y Patrones
 
 ### Separación de Responsabilidades
 
 ```
-api/          → Comunicación con el backend (sin lógica de UI)
-hooks/        → Lógica de negocio y estado
-components/   → Presentación pura
-context/      → Estado global compartido
+api/          → Comunicación HTTP pura (sin lógica de UI)
+context/      → Estado global compartido (autenticación)
+hooks/        → Lógica de negocio y estado de datos
+components/   → Presentación y UI
 utils/        → Funciones puras reutilizables
 constants/    → Valores estáticos
+styles/       → Tokens de diseño (variables CSS)
 ```
+
+### Flujo de Autenticación
+
+```
+App arranca
+    │
+    ├─ AuthContext lee localStorage
+    │       │
+    │       ├─ Token encontrado → isAuthenticated = true
+    │       │       └─ Renderiza <AuthenticatedApp />
+    │       │               └─ useDocuments se monta y carga datos
+    │       │
+    │       └─ Sin token → isAuthenticated = false
+    │               └─ Renderiza <LoginPage />
+    │
+    └─ Usuario hace login
+            │
+            ├─ POST /auth/login → { accessToken, user }
+            ├─ Guarda en localStorage
+            ├─ Actualiza AuthContext
+            └─ React renderiza <AuthenticatedApp />
+```
+
+### Manejo de Token Expirado
+
+```
+Petición HTTP con token expirado
+    │
+    └─ Backend responde 401
+            │
+            └─ Interceptor de Axios detecta 401
+                    │
+                    ├─ Limpia localStorage
+                    └─ Dispara evento 'auth:logout'
+                            │
+                            └─ AuthContext escucha el evento
+                                    │
+                                    └─ Limpia estado → React renderiza <LoginPage />
+```
+
+### Regla Crítica de Componentes
+
+> **Nunca definir componentes dentro de otros componentes.**
+
+Si un componente auxiliar (como `FieldGroup` o `Field`) se define dentro del componente padre, React lo trata como un tipo nuevo en cada render, desmonta y remonta el DOM, y los inputs pierden el foco al escribir.
+
+**Incorrecto:**
+```jsx
+function UploadForm() {
+  const FieldGroup = ({ label, children }) => <div>...</div>; // ❌ Re-crea en cada render
+  return <form><FieldGroup label="Título">...</FieldGroup></form>;
+}
+```
+
+**Correcto:**
+```jsx
+const FieldGroup = ({ label, children }) => <div>...</div>; // ✅ Estable entre renders
+
+function UploadForm() {
+  return <form><FieldGroup label="Título">...</FieldGroup></form>;
+}
+```
+
+---
 
 ## Componentes Principales
 
 ### `AuthContext`
-Provee el estado de sesión a toda la app. Persiste el token en `localStorage`.
+
+Provee el estado de sesión a toda la app.
 
 ```jsx
-const { user, isAuthenticated, login, logout, updateUser } = useAuth();
+const { user, isAuthenticated, loading, error, login, logout, updateUser } = useAuth();
 ```
 
+| Propiedad | Tipo | Descripción |
+|-----------|------|-------------|
+| `user` | object \| null | Datos del usuario autenticado |
+| `isAuthenticated` | boolean | `true` si hay token y usuario válidos |
+| `loading` | boolean | `true` durante el proceso de login |
+| `error` | string \| null | Mensaje de error del último login fallido |
+| `login(email, password)` | async function | Autentica y guarda la sesión |
+| `logout()` | function | Limpia la sesión |
+| `updateUser(data)` | function | Actualiza datos del usuario en contexto y localStorage |
+
+---
+
 ### `useDocuments`
+
 Hook que encapsula todas las operaciones CRUD de documentos.
 
 ```jsx
 const {
-  documents, stats, loading, error,
-  fetchAll, createDocument, updateDocument,
-  markAsResponded, removeDocument
+  documents,      // Document[]
+  stats,          // { PENDIENTE: n, EN_PROCESO: n, ... }
+  loading,        // boolean
+  error,          // string | null
+  fetchAll,       // () => Promise<void>
+  createDocument, // (payload) => Promise<Document>
+  updateDocument, // (id, payload) => Promise<Document>
+  markAsResponded,// (id) => Promise<Document>
+  removeDocument, // (id) => Promise<void>
 } = useDocuments();
 ```
 
+Solo se monta cuando el usuario está autenticado (vive en `AuthenticatedApp`).
+
+---
+
 ### `Button`
-Componente de botón con variantes: `primary`, `accent`, `outline`, `ghost`, `danger`, `success`.
 
 ```jsx
-<Button variant="primary" icon={<Save size={15} />} onClick={handleSave}>
+<Button
+  variant="primary"    // primary | accent | gold | outline | ghost | danger | success
+  size="md"            // sm | md | lg
+  icon={<Save size={15} />}
+  disabled={false}
+  onClick={handleClick}
+  type="button"        // button | submit
+>
   Guardar
 </Button>
 ```
 
+---
+
 ### `StatusBadge`
-Badge visual para el estado de un documento.
 
 ```jsx
 <StatusBadge status="POR_VENCER" />
+// Renderiza: ● Por Vencer (fondo amarillo, texto ámbar)
 ```
 
-## Despliegue
+Estados soportados: `PENDIENTE`, `EN_PROCESO`, `POR_VENCER`, `VENCIDO`, `RESPONDIDO`.
 
-### Build de Producción
+---
 
-```bash
-# Con la URL del backend de producción
-VITE_API_URL=https://api.gesgov.com/api/v1 npm run build
-```
+## Sistema de Diseño
 
-El build genera la carpeta `dist/` con archivos estáticos listos para servir.
+### Fuentes
 
-### Nginx (recomendado)
+| Fuente | Uso |
+|--------|-----|
+| Inter | Cuerpo de texto, labels, botones |
+| Plus Jakarta Sans | Títulos, headings, números grandes |
 
-Usa el `nginx.conf` incluido en el proyecto. Configuración clave para SPA:
-
-```nginx
-location / {
-    try_files $uri $uri/ /index.html;
-}
-```
-
-### Docker
-
-```bash
-# Construir imagen con la URL del backend
-docker build \
-  --build-arg VITE_API_URL=https://api.gesgov.com/api/v1 \
-  -t gesgov-frontend .
-
-# Ejecutar
-docker run -d -p 80:80 --name gesgov-frontend gesgov-frontend
-```
-
-O usar Docker Compose desde la raíz:
-
-```bash
-docker compose up -d --build frontend
-```
-
-### Vercel
-
-1. Conecta el repositorio en [vercel.com](https://vercel.com)
-2. Configura:
-   - **Framework Preset**: Vite
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-3. Agrega la variable de entorno `VITE_API_URL` en el panel de Vercel
-4. Deploy
-
-### Netlify
-
-1. Conecta el repositorio en [netlify.com](https://netlify.com)
-2. Configura:
-   - **Build Command**: `npm run build`
-   - **Publish Directory**: `dist`
-3. Agrega `VITE_API_URL` en Environment Variables
-4. Crea el archivo `public/_redirects`:
-   ```
-   /*  /index.html  200
-   ```
-
-## Convenciones de Código
-
-- **Componentes**: PascalCase (`DocumentsList.jsx`)
-- **Hooks**: camelCase con prefijo `use` (`useDocuments.js`)
-- **Constantes de módulo**: UPPER_SNAKE_CASE (`INPUT_BASE`, `FEATURES`)
-- **Componentes auxiliares**: Definidos **fuera** del componente padre para evitar re-renders
-- **Estilos**: Objetos JavaScript con variables CSS (`var(--primary)`)
-
-> **Regla importante**: Nunca definir componentes dentro de otros componentes. Esto causa que React los re-monte en cada render, perdiendo el foco de los inputs.
-
-## Paleta de Colores
+### Paleta de Colores (Variables CSS)
 
 | Variable | Valor | Uso |
 |----------|-------|-----|
-| `--primary` | `#2563EB` | Acciones principales, links |
+| `--primary` | `#2563EB` | Acciones principales, links, focus |
 | `--primary-dk` | `#1D4ED8` | Hover de primary |
 | `--accent` | `#F59E0B` | Acciones secundarias |
-| `--success` | `#10B981` | Estados positivos |
-| `--danger` | `#EF4444` | Errores, eliminación |
-| `--warning` | `#F59E0B` | Alertas |
+| `--success` | `#10B981` | Estado respondido, confirmaciones |
+| `--danger` | `#EF4444` | Errores, eliminación, vencidos |
+| `--warning` | `#F59E0B` | Alertas, por vencer |
 | `--sidebar-bg` | `#0F172A` | Fondo del sidebar |
+| `--surface` | `#FFFFFF` | Fondo de cards y paneles |
+| `--surface-2` | `#F8FAFC` | Fondo de la página |
 | `--text-1` | `#0F172A` | Texto principal |
 | `--text-3` | `#64748B` | Texto secundario |
-| `--border` | `#E2E8F0` | Bordes |
+| `--border` | `#E2E8F0` | Bordes de inputs y cards |
+
+### Animaciones
+
+| Nombre | Descripción |
+|--------|-------------|
+| `fadeUp` | Aparece desde abajo con fade |
+| `fadeIn` | Fade simple |
+| `scaleIn` | Escala desde 96% con fade |
+| `slideRight` | Desliza desde la izquierda |
+
+---
+
+## Despliegue en Vercel
+
+### Configuración
+
+| Campo | Valor |
+|-------|-------|
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | `npm install` |
+
+### Variable de entorno en Vercel
+
+```
+VITE_API_URL = https://gesgov-backend.onrender.com/api/v1
+```
+
+### SPA Routing
+
+El archivo `vercel.json` configura el rewrite necesario para que React Router funcione:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+### Actualizar el despliegue
+
+Cada `git push` a la rama `main` redespliega automáticamente en Vercel.
+
+```bash
+git add .
+git commit -m "feat: descripción del cambio"
+git push
+```
+
+---
+
+## Scripts Disponibles
+
+```bash
+npm run dev       # Servidor de desarrollo (http://localhost:5173)
+npm run build     # Build de producción → dist/
+npm run preview   # Preview del build local
+npm run lint      # ESLint
+```
